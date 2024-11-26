@@ -5,7 +5,7 @@ import sqlite3
 
 app = Flask(__name__)
 # Proper CORS setup for specific origins
-CORS(app)
+CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5500"]}})
 
 
 @app.route("/heartbeat-history", methods=["GET"])
@@ -19,12 +19,6 @@ def get_heartbeat_history():
         {"date": row[0].split(" ")[1], "heartbeat": row[1]} for row in data
     ]
     return jsonify(formatted_data)
-
-
-@app.after_request
-def add_cors_headers(response):
-    print(response.headers)
-    return response
 
 
 @app.route("/heartbeat", methods=["GET"])
