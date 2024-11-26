@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartbeat Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #555;
+        }
+
+        #heartbeat-display {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #007BFF;
+        }
+
+        .loading {
+            font-size: 1em;
+            color: #888;
+        }
+
+        #last-date {
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: #777;
+        }
+
+        .tab {
+            display: none;
+        }
+
+        .tab.active {
+            display: block;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .tabs button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .tabs button.active {
+            background-color: #0056b3;
+        }
+
+        #chart_div {
+            width: 800px;
+            height: 400px;
+            margin: 0 auto;
+        }
+    </style>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+
+<body>
+    <h1>Heartbeat Dashboard</h1>
+
+    <div class="tabs">
+        <button id="dashboard-tab" class="active">Dashboard</button>
+        <button id="history-tab">History</button>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="tab active">
+        <p>Current Heartbeat:</p>
+        <div id="heartbeat-display" class="loading">Loading...</div>
+        <div id="last-date">
+            <p></p>
+        </div>
+    </div>
+
+    <!-- History Section -->
+    <div id="history" class="tab">
+        <h2>History</h2>
+        <div id="chart_div"></div>
+    </div>
+
+    <script>
+        // Load Google Charts
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(() => {
+            drawChart([]);
+        });
+
+        let historyData = [];
+
+        function drawChart(data) {
+            const chartData = new google.visualization.DataTable();
+            chartData.addColumn('string', 'Timestamp');
+            chartData.addColumn('number', 'Heartbeat');
+
+            // Add rows to the data table
+            chartData.addRows(data);
+
+            const options = {
+                title: 'Heartbeat Over Time',
+                curveType: 'function',
+                legend: { position: 'bottom' },
+                hAxis: { title: 'Timestamp' },
+                vAxis: { title: 'Heartbeat' },
+            };
+
+            const chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+            chart.draw(chartData, options);
+        }
+
+        function updateDashboard(mostRecent) {
+            document.getElementById('heartbeat-display').innerText = mostRecent.heartbeat;
+            document.getElementById('last-date').innerText = mostRecent.date;
+        }
+
+        function updateHistory(data) {
+            const formattedData = data.map(entry => [entry.date, entry.heartbeat]);
+            drawChart(formattedData);
+        }
+
+        // Fetch data from the server
+        function fetchData() {
+            fetch('http://127.0.0.1:5000/heartbeat-history') // Single API request
+                .then(response => response.json())
+                .then(data => {
+                    historyData = data;
+                    console.log(historyData)
+                    // Update the dashboard with the most recent value
+                    if (historyData.length > 0) {
+                        const mostRecent = historyData[0]; // Assuming data is ordered by timestamp DESC
+                        updateDashboard(mostRecent);
+                    }
+
+                    // Update the history chart
+                    if (document.getElementById('history').classList.contains('active')) {
+                        updateHistory(historyData);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        // Initial fetch
+        fetchData();
+
+        // Set up periodic updates
+        setInterval(() => {
+            fetchData();
+        }, 5000); // Fetch every 5 seconds
+
+        // Handle tab switching
+        document.getElementById('dashboard-tab').addEventListener('click', () => {
+            document.getElementById('dashboard').classList.add('active');
+            document.getElementById('history').classList.remove('active');
+            document.getElementById('dashboard-tab').classList.add('active');
+            document.getElementById('history-tab').classList.remove('active');
+        });
+
+        document.getElementById('history-tab').addEventListener('click', () => {
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('history').classList.add('active');
+            document.getElementById('dashboard-tab').classList.remove('active');
+            document.getElementById('history-tab').classList.add('active');
+
+            // Draw chart when switching to history tab
+            updateHistory(historyData);
+        });
+    </script>
+</body>
+
+</html>
