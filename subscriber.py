@@ -9,10 +9,6 @@ port = 1883
 topic = "sensor/data"
 
 
-import sqlite3
-import paho.mqtt.client as mqtt
-import json
-
 # Database setup
 conn = sqlite3.connect("heartbeat.db")
 c = conn.cursor()
