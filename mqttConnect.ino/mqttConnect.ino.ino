@@ -51,7 +51,7 @@ bool checkRapidChange(int heartbeat){
     int avg = sum / movingAverageCount;
     if (abs(avg - heartbeat) > RAPIDCHANGE){
       return true;
-    }
+    }else return false;
   }
 }
 
@@ -149,5 +149,5 @@ void loop() {
     tsLastReport = millis();
   }
   client.loop();
-  
+
 }
