@@ -49,15 +49,14 @@ bool checkRapidChange(int heartbeat){
     idx = (idx + 1) % MOVINGAVERAGEQUANTITY;
     return false;
   }else{
+    
     int avg = sum / movingAverageCount;
-    if (abs(avg - heartbeat) > RAPIDCHANGE){
-      return true;
-    }else{
-      sum -= movingAverage[idx];
-      movingAverage[idx] = heartbeat;
-      sum += heartbeat;
-      idx = (idx + 1) % MOVINGAVERAGEQUANTITY;
-      return false;
+    bool rapid = abs(avg - heartbeat) > RAPIDCHANGE;
+    sum -= movingAverage[idx];
+    movingAverage[idx] = heartbeat;
+    sum += heartbeat;
+    idx = (idx + 1) % MOVINGAVERAGEQUANTITY;
+    return rapid;
     }
   }
 }
