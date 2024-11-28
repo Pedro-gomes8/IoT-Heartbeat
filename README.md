@@ -11,11 +11,11 @@ Pour lancer le MQTT:
 
 mosquitto -c mosquitto.conf
 
-Si la commande au dessus ne marche pas, il faut changer la valuer 'port' dans le fichier subscriber.py et mosquitto.conf . Vous pouvez utiliser 1884 plutot que 1883 
+Si la commande ci-dessus ne fonctionne (Address already in use), il est nécessaire de modifier la valeur de port dans les fichiers subscriber.py et mosquitto.conf. Vous pouvez utiliser le port 1884 au lieu de 1883.
 
 
 
-Connecter l'ordinateur et arduino à la meme reseau. Trouver l'addresse ip de ta machine avec ifconfig. L'ip normalement commence par 192.quelquechose 
+Connecter l'ordinateur et arduino au meme reseau. Trouver l'addresse ip de ta machine avec ifconfig. L'ip normalement commence par 192.quelquechose 
 
 OBS: Changer l'address MQTT -> Utilisez l'addresse IP decouvert par ifconfig
 
