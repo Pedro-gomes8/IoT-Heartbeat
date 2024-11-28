@@ -49,7 +49,7 @@ bool checkRapidChange(int heartbeat){
     idx = (idx + 1) % MOVINGAVERAGEQUANTITY;
     return false;
   }else{
-    
+
     int avg = sum / movingAverageCount;
     bool rapid = abs(avg - heartbeat) > RAPIDCHANGE;
     sum -= movingAverage[idx];
@@ -96,6 +96,10 @@ void reconnect() {
 
 void setup() {
   Serial.begin(9600);
+  pinMode(LEDPIN,OUTPUT);
+  
+  pinMode(BUZZER,OUTPUT);
+
   setup_wifi();
   client.setServer(mqtt_server, mqtt_port);
   Wire.begin(SDA, SCL);
