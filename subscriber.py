@@ -4,7 +4,7 @@ import json
 
 
 # MQTT Broker details
-broker = "192.168.43.119"  # Replace with your broker's IP address
+broker = "192.168.43.119"
 port = 1883
 topic = "sensor/data"
 
@@ -27,7 +27,7 @@ def on_connect(client, userdata, flags, rc):
         print(f"Failed to connect, return code {rc}")
 
 
-# Callback for when a message is received from the server
+# Callback for when a message is received from the server. Send the value to the database
 def on_message(client, userdata, msg):
     data = json.loads(msg.payload.decode())
     heartbeat = data["heartbeat"]
@@ -44,5 +44,5 @@ client.on_message = on_message
 # Connect to broker
 client.connect(broker, port, 60)
 
-# Blocking loop to process network traffic and dispatch callbacks
+# Blocking loop to process network traffic
 client.loop_forever()
